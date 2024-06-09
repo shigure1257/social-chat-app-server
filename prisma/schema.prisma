@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id String @id @default(uuid())
+  title String @db.VarChar(255)
+  content String @db.LongText
+  author User @relation(fields: [authorId],references: [id])
+  type String @db.VarChar(255)
+  category String @db.VarChar(255)
+  tags Tag[]
+  coverUrl String? @db.VarChar(255)
+  published Boolean @default(false)
+  authorId Int
+  createTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  email String 
+  username String @db.VarChar(20) @unique
+  password String @db.VarChar(255)
+  refresh_token String? @db.VarChar(255)
+  posts Post[]
+}
+
+model Tag {
+  id Int  @id @default(autoincrement()) 
+  name String  @db.VarChar(255) @unique
+  posts Post[]
+}
+// model PostToTag {
+//   tag Tag @relation(fields: [tagId],references: [id])
+//   post Post @relation(fields: [postId],references: [id])
+//   tagId Int
+//   postId String
+//   assignedAt DateTime @default(now())
+//   assignedBy String
+
+//   @@id([postId, tagId])
+// }
+
+model Picture {
+  id Int @id @default(autoincrement())
+  md5 String @db.VarChar(255) @unique
+  path String @db.VarChar(255)
+}
